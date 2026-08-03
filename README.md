@@ -4,7 +4,7 @@ SignalWatch is a RF anomaly monitoring application. It will generate synthetic s
 
 ## Current milestone
 
-Phase 2 provides a deterministic synthetic RF dataset and batch anomaly pipeline. The dashboard remains a connectivity shell until the API and visualization phases.
+Phase 3 provides a deterministic synthetic RF dataset, batch anomaly pipeline, and versioned query API. The dashboard remains a connectivity shell until the visualization phase.
 
 ## Prerequisites
 
@@ -44,6 +44,21 @@ Generated files under `data/` are intentionally Git-ignored:
 - `metadata.json`: row counts, feature list and artifact hashes.
 
 Synthetic ground-truth labels are never written into the public observation, detection, or incident artifacts.
+
+## Query API
+
+The API loads generated Parquet artifacts once at startup. Run `make generate` before starting the stack; analytics endpoints return `503` with recovery instructions if artifacts are missing.
+
+| Endpoint | Purpose |
+| --- | --- |
+| `GET /api/v1/health` | Service availability |
+| `GET /api/v1/overview` | Filtered incident and anomaly summary |
+| `GET /api/v1/observations` | Bounded chart series with actual and expected values |
+| `GET /api/v1/anomalies` | Ranked, paginated grouped incidents |
+| `GET /api/v1/anomalies/{id}` | Explanation, comparisons, contributions, and evidence |
+| `GET /api/v1/heatmap` | Time-and-frequency severity cells |
+
+Applicable endpoints accept `from`, `to`, `sensor_id`, `frequency_mhz`, `min_severity`, and `incident_type`. The observation endpoint also accepts a metric and returns at most 1,000 points while preserving anomalous readings. Interactive OpenAPI documentation is available at <http://localhost:8000/docs>.
 
 ## Repository layout
 

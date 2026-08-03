@@ -10,7 +10,7 @@ Development is split into five reviewable phases. Each phase ends with verificat
 | --- | --- | --- |
 | 1. Repository skeleton | Complete | Dockerized React and FastAPI foundation |
 | 2. Synthetic data and ML pipeline | Complete | Reproducible scored RF dataset and grouped incidents |
-| 3. Query API | Planned | Filtered, versioned analytics endpoints |
+| 3. Query API | Complete | Filtered, versioned analytics endpoints |
 | 4. Interactive dashboard | Planned | Analyst-facing exploration and explanation UI |
 | 5. Integration and demo hardening | Planned | Clean-start verification and demo documentation |
 
@@ -150,9 +150,9 @@ The following Git-ignored files are created under `data/` by `make generate`:
 
 ## Phase 3 — Query API
 
-**Status:** Planned.
+**Status:** Complete.
 
-### Required endpoints
+### Delivered endpoints
 
 ```http
 GET /api/v1/health
@@ -163,9 +163,9 @@ GET /api/v1/anomalies/{id}
 GET /api/v1/heatmap
 ```
 
-### Required behaviour
+### Delivered behaviour
 
-- Load generated Parquet artifacts once during application startup and expose a clear unavailable-artifact error when generation has not run.
+- Load generated Parquet artifacts once during application startup and expose a clear `503` unavailable-artifact error when generation has not run.
 - Filter applicable endpoints by UTC time range, sensor, frequency, minimum severity, and incident type.
 - Return grouped incidents ranked by numeric severity.
 - Downsample time-series responses to at most 1,000 points while retaining normal bounds and severe points.
@@ -174,28 +174,33 @@ GET /api/v1/heatmap
 - Validate unknown sensors, frequencies, metrics, types, malformed timestamps, and reversed ranges.
 - Return `404` for unknown incident IDs.
 - Add API contract, filter, failure-path, and artifact-loading tests.
+- Publish typed response schemas in OpenAPI for summary, observation, incident, detail, and heatmap payloads.
+- Include available sensors and frequencies in observation metadata for the dashboard filter controls.
 
-### Review gate
+### Acceptance evidence
 
-Report the OpenAPI surface, representative responses, automated test results, filter behaviour, and one fully explained critical incident.
+- All six endpoints are published under `/api/v1` and visible in OpenAPI.
+- Observation results never exceed 1,000 points and retain all 742 anomalous points in the unfiltered demo dataset.
+- Incident results remain ordered by descending numeric severity.
+- Domain validation covers timestamps, sensors, frequencies, metrics, severity values, and incident types.
+- Missing incidents return `404`; missing generated artifacts return `503` with recovery instructions.
+- Twelve dedicated API tests pass alongside the pipeline and health suites.
 
 ### Relevant files
 
-Existing files to extend:
-
 - [`backend/app/main.py`](../backend/app/main.py)
 - [`backend/app/__init__.py`](../backend/app/__init__.py)
+- [`backend/app/api/__init__.py`](../backend/app/api/__init__.py)
+- [`backend/app/api/dependencies.py`](../backend/app/api/dependencies.py)
+- [`backend/app/api/routes.py`](../backend/app/api/routes.py)
+- [`backend/app/api/schemas.py`](../backend/app/api/schemas.py)
+- [`backend/app/repositories/__init__.py`](../backend/app/repositories/__init__.py)
+- [`backend/app/repositories/artifacts.py`](../backend/app/repositories/artifacts.py)
+- [`backend/tests/test_api.py`](../backend/tests/test_api.py)
 - [`backend/tests/test_health.py`](../backend/tests/test_health.py)
 - [`backend/pyproject.toml`](../backend/pyproject.toml)
 - [`compose.yaml`](../compose.yaml)
 - [`data/.gitkeep`](../data/.gitkeep)
-
-Planned API modules:
-
-- `backend/app/api/routes.py`
-- `backend/app/api/schemas.py`
-- `backend/app/repositories/artifacts.py`
-- `backend/tests/test_api.py`
 
 ## Phase 4 — Interactive Dashboard
 
