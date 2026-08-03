@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SignalWatch | RF Intelligence Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#f9f9ff",
+                    "inverse-on-surface": "#ecf1ff",
+                    "tertiary": "#b61722",
+                    "error": "#ba1a1a",
+                    "on-error-container": "#93000a",
+                    "surface-container": "#e7eeff",
+                    "primary-fixed": "#d8e2ff",
+                    "secondary-container": "#fea619",
+                    "on-primary-fixed-variant": "#004395",
+                    "surface-bright": "#f9f9ff",
+                    "on-tertiary-fixed-variant": "#930013",
+                    "primary-container": "#2170e4",
+                    "on-surface-variant": "#424754",
+                    "surface-container-high": "#dee8ff",
+                    "secondary": "#855300",
+                    "outline-variant": "#c2c6d6",
+                    "on-error": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#ffb95f",
+                    "on-tertiary-container": "#fffbff",
+                    "on-secondary-fixed": "#2a1700",
+                    "inverse-primary": "#adc6ff",
+                    "tertiary-fixed-dim": "#ffb3ad",
+                    "on-primary-fixed": "#001a42",
+                    "surface-container-highest": "#d8e3fb",
+                    "on-tertiary-fixed": "#410004",
+                    "inverse-surface": "#263143",
+                    "on-surface": "#111c2d",
+                    "on-primary-container": "#fefcff",
+                    "on-background": "#111c2d",
+                    "outline": "#727785",
+                    "surface-container-low": "#f0f3ff",
+                    "surface-dim": "#cfdaf2",
+                    "on-secondary": "#ffffff",
+                    "secondary-fixed": "#ffddb8",
+                    "primary": "#0058be",
+                    "tertiary-container": "#da3437",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed": "#ffdad7",
+                    "surface-tint": "#005ac2",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-tertiary": "#ffffff",
+                    "background": "#f9f9ff",
+                    "on-primary": "#ffffff",
+                    "on-secondary-container": "#684000",
+                    "surface-variant": "#d8e3fb",
+                    "on-secondary-fixed-variant": "#653e00"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "margin-desktop": "2.5rem",
+                    "gutter": "1.5rem",
+                    "md": "1rem",
+                    "lg": "1.5rem",
+                    "xl": "2rem",
+                    "2xl": "3rem",
+                    "base": "4px",
+                    "xs": "0.25rem",
+                    "margin-mobile": "1rem",
+                    "sm": "0.5rem"
+            },
+            "fontFamily": {
+                    "body-lg": ["Hanken Grotesk"],
+                    "headline-sm": ["Hanken Grotesk"],
+                    "label-caps": ["Hanken Grotesk"],
+                    "label-mono": ["JetBrains Mono"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "display-lg": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "label-mono": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Hanken Grotesk', sans-serif; -webkit-font-smoothing: antialiased; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .chart-grid { background-image: linear-gradient(to right, #E2E8F0 1px, transparent 1px), linear-gradient(to bottom, #E2E8F0 1px, transparent 1px); background-size: 40px 40px; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface overflow-hidden">
+<!-- TopNavBar -->
+<header class="bg-surface-container-lowest border-b border-outline-variant shadow-sm flex justify-between items-center w-full px-margin-desktop h-16 z-50 fixed top-0">
+<div class="flex items-center gap-xl">
+<span class="text-headline-md font-headline-md font-bold text-primary">SignalWatch</span>
+<nav class="hidden md:flex gap-lg h-full items-center pt-1">
+<a class="font-label-caps text-label-caps text-primary border-b-2 border-primary pb-1" href="#">Dashboard</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-on-surface transition-colors pb-1" href="#">Sensors</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-on-surface transition-colors pb-1" href="#">History</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-on-surface transition-colors pb-1" href="#">Reports</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative group hidden lg:block">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline">search</span>
+<input class="bg-surface-container rounded-full pl-10 pr-4 py-1.5 text-body-md border-none focus:ring-2 focus:ring-primary w-64 transition-all" placeholder="Search signals..." type="text"/>
+</div>
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden ml-2 ring-1 ring-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a female data analyst with a confident expression, set against a blurred high-tech control room background. The lighting is crisp and cool-toned, matching a clinical and modern corporate design aesthetic. She wears minimalist dark business attire, conveying authority and technical expertise in a RF intelligence environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7k3-bAFELVdateX1tB80fY-iBZwMjQgZJOaSwtoVA8kcRShrZO10UMrGFGx3d1-SqKSzy6em1LN7ZF-cols5OeL4w96FD70ijjFI77KanBAxjvADTOXIp2mZjTyuvnZc9SWLsp650GWoUSC6YCLoBnH5gYD3bCnVYzWJpGtcKnRSnRsClgjNtsHovI1jrtLeAmHvbZIi87CLQmV7Srt17y8iJtb0189w66v_TxzNKM-5wPvbnoY_PSA"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar (Collapsed/Rail style) -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] z-40 bg-surface-container-low border-r border-outline-variant w-[72px] hover:w-64 transition-all duration-300 flex flex-col py-md overflow-hidden group/sidebar shadow-none">
+<div class="flex flex-col gap-sm px-3 flex-1">
+<!-- Active: Dashboard maps to "Live Stream" or "Analysis" logic. User requested SideNav items specifically -->
+<button class="flex items-center gap-lg w-full p-3 bg-primary-container text-on-primary-container rounded-xl transition-transform active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">radar</span>
+<span class="font-label-mono text-label-mono whitespace-nowrap opacity-0 group-hover/sidebar:opacity-100 transition-opacity">Live Stream</span>
+</button>
+<button class="flex items-center gap-lg w-full p-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-mono text-label-mono whitespace-nowrap opacity-0 group-hover/sidebar:opacity-100 transition-opacity">Analysis</span>
+</button>
+<button class="flex items-center gap-lg w-full p-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-mono text-label-mono whitespace-nowrap opacity-0 group-hover/sidebar:opacity-100 transition-opacity">Archive</span>
+</button>
+<button class="flex items-center gap-lg w-full p-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all">
+<span class="material-symbols-outlined">map</span>
+<span class="font-label-mono text-label-mono whitespace-nowrap opacity-0 group-hover/sidebar:opacity-100 transition-opacity">Map View</span>
+</button>
+<button class="flex items-center gap-lg w-full p-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all">
+<span class="material-symbols-outlined">router</span>
+<span class="font-label-mono text-label-mono whitespace-nowrap opacity-0 group-hover/sidebar:opacity-100 transition-opacity">Devices</span>
+</button>
+</div>
+<div class="flex flex-col gap-sm px-3 mt-auto">
+<button class="flex items-center gap-lg w-full p-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-mono text-label-mono whitespace-nowrap opacity-0 group-hover/sidebar:opacity-100 transition-opacity">Support</span>
+</button>
+<button class="flex items-center gap-lg w-full p-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all">
+<span class="material-symbols-outlined text-tertiary">logout</span>
+<span class="font-label-mono text-label-mono whitespace-nowrap opacity-0 group-hover/sidebar:opacity-100 transition-opacity text-tertiary">Sign Out</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-[72px] mt-16 p-margin-desktop h-[calc(100vh-64px)] overflow-y-auto no-scrollbar">
+<!-- Top Section: Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-gutter mb-gutter">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-md flex flex-col justify-between hover:shadow-sm transition-all duration-200">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-on-surface-variant">ACTIVE INCIDENTS</span>
+<span class="material-symbols-outlined text-primary text-[18px]">emergency</span>
+</div>
+<div class="my-xs">
+<span class="font-display-lg text-display-lg text-on-surface">12</span>
+</div>
+<div class="h-8 w-full mt-2">
+<svg class="w-full h-full" viewbox="0 0 100 20">
+<path d="M0 15 Q 10 5, 20 12 T 40 8 T 60 14 T 80 10 T 100 12" fill="none" stroke="#0058be" stroke-width="1.5"></path>
+</svg>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-md flex flex-col justify-between hover:shadow-sm transition-all duration-200">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-on-surface-variant">CRITICAL</span>
+<span class="material-symbols-outlined text-tertiary text-[18px]">report</span>
+</div>
+<div class="my-xs">
+<span class="font-display-lg text-display-lg text-tertiary">3</span>
+</div>
+<div class="h-8 w-full mt-2">
+<svg class="w-full h-full" viewbox="0 0 100 20">
+<path d="M0 18 L 10 12 L 20 19 L 35 10 L 50 15 L 65 5 L 80 12 L 100 2" fill="none" stroke="#b61722" stroke-width="1.5"></path>
+</svg>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-md flex flex-col justify-between hover:shadow-sm transition-all duration-200">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-on-surface-variant">AFFECTED SENSORS</span>
+<span class="material-symbols-outlined text-secondary text-[18px]">sensors</span>
+</div>
+<div class="my-xs">
+<span class="font-display-lg text-display-lg text-on-surface">8</span>
+</div>
+<div class="h-8 w-full mt-2 opacity-50">
+<svg class="w-full h-full" viewbox="0 0 100 20">
+<rect fill="#855300" height="10" width="5" x="0" y="5"></rect>
+<rect fill="#855300" height="7" width="5" x="10" y="8"></rect>
+<rect fill="#855300" height="12" width="5" x="20" y="3"></rect>
+<rect fill="#855300" height="9" width="5" x="30" y="6"></rect>
+<rect fill="#855300" height="13" width="5" x="40" y="2"></rect>
+</svg>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-md flex flex-col justify-between hover:shadow-sm transition-all duration-200">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-on-surface-variant">ANOMALY RATE</span>
+<span class="material-symbols-outlined text-outline text-[18px]">query_stats</span>
+</div>
+<div class="my-xs">
+<span class="font-display-lg text-display-lg text-on-surface">4.2<span class="text-headline-sm">%</span></span>
+</div>
+<div class="h-8 w-full mt-2">
+<div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="bg-primary h-full" style="width: 42%;"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Middle Section: 70/30 Columns -->
+<div class="grid grid-cols-1 xl:grid-cols-10 gap-gutter mb-gutter">
+<!-- Left Column: Time-Series Chart (7/10) -->
+<div class="xl:col-span-7 flex flex-col">
+<div class="bg-surface-container-lowest border border-outline-variant h-full min-h-[400px] flex flex-col">
+<div class="p-md border-b border-outline-variant flex justify-between items-center">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Signal Magnitude Analysis</h2>
+<p class="font-label-mono text-label-mono text-outline uppercase">Sensor ID: RX-9921 • Central District</p>
+</div>
+<div class="flex gap-sm">
+<span class="flex items-center gap-1 font-label-mono text-label-mono text-on-surface-variant">
+<span class="w-3 h-3 bg-primary rounded-full"></span> Observed
+                            </span>
+<span class="flex items-center gap-1 font-label-mono text-label-mono text-on-surface-variant ml-2">
+<span class="w-3 h-3 bg-outline-variant rounded-sm opacity-50"></span> Expected
+                            </span>
+</div>
+</div>
+<div class="flex-1 relative p-lg chart-grid bg-[length:60px_60px]">
+<!-- Chart Lines (Simulated with SVG) -->
+<svg class="w-full h-full drop-shadow-sm" preserveaspectratio="none" viewbox="0 0 1000 300">
+<!-- Expected Normal Range Shaded -->
+<path d="M0 150 L 100 140 L 200 145 L 300 155 L 400 150 L 500 140 L 600 145 L 700 150 L 800 145 L 900 155 L 1000 150 
+                                     L 1000 200 L 900 205 L 800 195 L 700 200 L 600 195 L 500 190 L 400 200 L 300 205 L 200 195 L 100 190 L 0 200 Z" fill="#0058be" fill-opacity="0.05"></path>
+<!-- Observed Data Line -->
+<polyline fill="none" points="0,170 50,175 100,165 150,180 200,172 250,168 300,100 320,40 340,90 400,175 450,170 500,165 550,178 600,172 650,220 700,240 750,210 800,175 850,170 900,165 950,172 1000,170" stroke="#0058be" stroke-linejoin="round" stroke-width="2"></polyline>
+<!-- Anomaly Markers (Coral Red) -->
+<circle class="animate-pulse" cx="320" cy="40" fill="#b61722" r="6"></circle>
+<circle class="animate-pulse" cx="700" cy="240" fill="#b61722" r="6"></circle>
+</svg>
+<!-- Tooltip Overlay -->
+<div class="absolute left-[340px] top-[40px] -translate-x-1/2 -translate-y-[110%] bg-inverse-surface text-inverse-on-surface p-sm rounded shadow-lg pointer-events-none border border-outline z-10">
+<p class="font-label-mono text-label-mono">FREQ: 2.45GHz</p>
+<p class="font-headline-sm text-headline-sm text-tertiary-fixed-dim">-32.4 dBm</p>
+<p class="text-[10px] uppercase opacity-60">Anomaly Detected</p>
+</div>
+<!-- Axes Labels -->
+<div class="absolute left-2 top-2 font-label-mono text-label-mono text-outline -rotate-90 origin-top-left uppercase">Power (dBm)</div>
+<div class="absolute bottom-2 right-4 font-label-mono text-label-mono text-outline uppercase">Time (ms)</div>
+</div>
+<!-- Draggable Navigator -->
+<div class="p-md bg-surface-container-low border-t border-outline-variant h-12 flex items-center gap-md">
+<div class="flex-1 h-2 bg-surface-container-high rounded-full relative overflow-hidden">
+<div class="absolute left-[25%] right-[45%] h-full bg-primary/20 border-x-2 border-primary cursor-move"></div>
+<!-- Mini-chart in background -->
+<svg class="w-full h-full opacity-30" viewbox="0 0 1000 10">
+<path d="M0 5 Q 250 8, 500 5 T 1000 5" fill="none" stroke="#0058be" stroke-width="1"></path>
+</svg>
+</div>
+<span class="font-label-mono text-label-mono text-outline">14:00 - 15:30</span>
+</div>
+</div>
+</div>
+<!-- Right Column: Top Incidents (3/10) -->
+<div class="xl:col-span-3 flex flex-col">
+<div class="bg-surface-container-lowest border border-outline-variant h-full flex flex-col">
+<div class="p-md border-b border-outline-variant">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Top Incidents</h2>
+</div>
+<div class="flex-1 overflow-y-auto no-scrollbar p-sm flex flex-col gap-sm">
+<!-- Incident 1 (Selected) -->
+<div class="bg-surface-container-high border-2 border-primary p-md rounded-lg flex gap-md cursor-pointer group transition-all">
+<div class="flex flex-col items-center justify-center bg-tertiary-container w-12 h-12 rounded-lg">
+<span class="font-label-caps text-label-caps text-white leading-none">SCORE</span>
+<span class="font-headline-sm text-headline-sm text-white">96</span>
+</div>
+<div class="flex-1">
+<h3 class="font-body-lg text-body-lg font-bold text-on-surface leading-tight">Broadband Interference</h3>
+<p class="font-label-mono text-label-mono text-on-surface-variant">Sensor: WST-012 • 14:22:04</p>
+</div>
+</div>
+<!-- Incident 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-lg flex gap-md cursor-pointer hover:bg-surface-container-low transition-all">
+<div class="flex flex-col items-center justify-center bg-secondary-container w-12 h-12 rounded-lg">
+<span class="font-label-caps text-label-caps text-on-secondary-container leading-none">SCORE</span>
+<span class="font-headline-sm text-headline-sm text-on-secondary-container">74</span>
+</div>
+<div class="flex-1">
+<h3 class="font-body-lg text-body-lg font-bold text-on-surface leading-tight">Signal Spoofing Detected</h3>
+<p class="font-label-mono text-label-mono text-on-surface-variant">Sensor: EST-451 • 13:45:11</p>
+</div>
+</div>
+<!-- Incident 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-lg flex gap-md cursor-pointer hover:bg-surface-container-low transition-all">
+<div class="flex flex-col items-center justify-center bg-surface-container-highest w-12 h-12 rounded-lg">
+<span class="font-label-caps text-label-caps text-outline leading-none">SCORE</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">42</span>
+</div>
+<div class="flex-1">
+<h3 class="font-body-lg text-body-lg font-bold text-on-surface leading-tight">Low SNR Warning</h3>
+<p class="font-label-mono text-label-mono text-on-surface-variant">Sensor: CNT-009 • 12:01:58</p>
+</div>
+</div>
+</div>
+<div class="p-md bg-surface-container-low border-t border-outline-variant">
+<button class="w-full py-2 bg-primary text-on-primary font-label-caps text-label-caps rounded-lg uppercase tracking-wider hover:bg-primary-container transition-colors">
+                            View All Incidents
+                        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Section: Frequency Heatmap -->
+<div class="bg-surface-container-lowest border border-outline-variant p-md mb-margin-desktop">
+<div class="flex justify-between items-center mb-md">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Spectral Density Heatmap</h2>
+<div class="flex gap-md items-center">
+<div class="flex items-center gap-1 font-label-mono text-[10px] uppercase">
+<span class="w-3 h-3 bg-outline-variant"></span> Normal
+                    </div>
+<div class="flex items-center gap-1 font-label-mono text-[10px] uppercase">
+<span class="w-3 h-3 bg-secondary-container"></span> Warning
+                    </div>
+<div class="flex items-center gap-1 font-label-mono text-[10px] uppercase">
+<span class="w-3 h-3 bg-tertiary-container"></span> Critical
+                    </div>
+</div>
+</div>
+<div class="flex gap-sm">
+<!-- Y-Axis Labels -->
+<div class="flex flex-col justify-between py-2 w-16">
+<span class="font-label-mono text-[10px] text-outline text-right pr-2">CH 10</span>
+<span class="font-label-mono text-[10px] text-outline text-right pr-2">CH 08</span>
+<span class="font-label-mono text-[10px] text-outline text-right pr-2">CH 06</span>
+<span class="font-label-mono text-[10px] text-outline text-right pr-2">CH 04</span>
+<span class="font-label-mono text-[10px] text-outline text-right pr-2">CH 02</span>
+<span class="font-label-mono text-[10px] text-outline text-right pr-2">CH 01</span>
+</div>
+<!-- Heatmap Grid -->
+<div class="flex-1 grid grid-cols-24 gap-[2px] h-48">
+<!-- Column generation (Simulated for 24 time steps) -->
+<!-- JS can randomize this, but let's pre-code visual patterns -->
+<script>
+                        const heatmap = document.currentScript.parentElement;
+                        const colors = ['bg-outline-variant', 'bg-outline-variant', 'bg-outline-variant', 'bg-secondary-container', 'bg-tertiary-container'];
+                        for (let col = 0; col < 24; col++) {
+                            const colDiv = document.createElement('div');
+                            colDiv.className = 'flex flex-col gap-[2px]';
+                            for (let row = 0; row < 10; row++) {
+                                const cell = document.createElement('div');
+                                let colorIdx = 0;
+                                // Randomize some activity but clusters of "critical" in the middle
+                                if (col > 8 && col < 12 && row > 3 && row < 7) colorIdx = Math.floor(Math.random() * 2) + 3;
+                                else if (Math.random() > 0.85) colorIdx = 3;
+                                
+                                cell.className = `flex-1 ${colors[colorIdx]} opacity-70 hover:opacity-100 transition-opacity cursor-crosshair`;
+                                colDiv.appendChild(cell);
+                            }
+                            heatmap.appendChild(colDiv);
+                        }
+                    </script>
+</div>
+</div>
+<div class="flex justify-between pl-16 pt-2">
+<span class="font-label-mono text-[10px] text-outline uppercase">T - 60m</span>
+<span class="font-label-mono text-[10px] text-outline uppercase">T - 30m</span>
+<span class="font-label-mono text-[10px] text-outline uppercase">Current</span>
+</div>
+</div>
+</main>
+<!-- Side Slide-out Drawer (Signal Details - Hidden by default) -->
+<div class="fixed right-0 top-0 h-full w-[400px] bg-surface-container-lowest border-l border-outline-variant shadow-2xl transform translate-x-full transition-transform duration-300 z-[60]" id="details-drawer">
+<div class="p-lg h-full flex flex-col">
+<div class="flex justify-between items-center mb-xl">
+<h2 class="font-headline-md text-headline-md text-on-surface">Signal Details</h2>
+<button class="p-2 hover:bg-surface-container-low rounded-full" onclick="toggleDrawer()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto no-scrollbar">
+<div class="mb-xl bg-surface-container p-md rounded-xl">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-sm">WATERFALL VISUALIZATION</p>
+<div class="h-48 bg-inverse-surface rounded-lg overflow-hidden relative">
+<!-- Placeholder for high-res waterfall chart -->
+<div class="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary to-transparent"></div>
+
+</div>
+</div>
+<div class="space-y-lg">
+<section>
+<h3 class="font-label-caps text-label-caps text-outline mb-sm">TECHNICAL METADATA</h3>
+<table class="w-full text-body-md">
+<tbody><tr class="border-b border-outline-variant">
+<td class="py-2 text-on-surface-variant font-label-mono">Frequency</td>
+<td class="py-2 text-right font-label-mono font-bold">2,437.50 MHz</td>
+</tr>
+<tr class="border-b border-outline-variant">
+<td class="py-2 text-on-surface-variant font-label-mono">Bandwidth</td>
+<td class="py-2 text-right font-label-mono font-bold">20.0 MHz</td>
+</tr>
+<tr class="border-b border-outline-variant">
+<td class="py-2 text-on-surface-variant font-label-mono">Modulation</td>
+<td class="py-2 text-right font-label-mono font-bold">OFDM (64-QAM)</td>
+</tr>
+<tr class="border-b border-outline-variant">
+<td class="py-2 text-on-surface-variant font-label-mono">Confidence</td>
+<td class="py-2 text-right font-label-mono font-bold text-primary">98.2%</td>
+</tr>
+</tbody></table>
+</section>
+<section>
+<h3 class="font-label-caps text-label-caps text-outline mb-sm">SOURCE ESTIMATE</h3>
+<div class="h-32 bg-surface-container-high rounded-lg overflow-hidden relative border border-outline-variant">
+<div class="w-full h-full bg-cover bg-center grayscale opacity-60" data-alt="A clean, minimalist topographical map of a city grid with a pulsing red signal radius emanating from a specific building. The map uses a high-contrast clinical design with cool blue and grey tones, prioritizing clarity and spatial precision over decorative detail." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCvZoSj1Vk3EP14P8MvNkyAvIGHk96cO8YBAyRruIm1EgFMh8-KXK1EJGRuvuQtC19s9WpEApWlIOTjCbsbFCkospeN9IUT3n94StdhZPmzP-pfFR3Mt7vBXEYnJCb98FcmEjAltJa0rWclatTQHKqcmX6MJ0oUCtFSmOOEfs2Yx-fGgyKYixZTzONcJtINbCj9KZ0jyplqomqqWIdMWRLc6_EnG79ao_kCSNl_iIWDNTuHLiZ-KYhJKA')"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary scale-[2] animate-ping">location_on</span>
+</div>
+</div>
+<p class="text-[10px] font-label-mono text-outline mt-2 text-center">COORD: 34.0522° N, 118.2437° W</p>
+</section>
+</div>
+</div>
+<div class="mt-auto pt-lg border-t border-outline-variant grid grid-cols-2 gap-md">
+<button class="py-3 border border-primary text-primary font-label-caps text-label-caps rounded-lg hover:bg-primary-fixed transition-colors">DE-ESCALATE</button>
+<button class="py-3 bg-tertiary text-on-tertiary font-label-caps text-label-caps rounded-lg hover:bg-tertiary-container transition-colors">ACTION TEAM</button>
+</div>
+</div>
+</div>
+<script>
+        function toggleDrawer() {
+            const drawer = document.getElementById('details-drawer');
+            drawer.classList.toggle('translate-x-full');
+        }
+
+        // Simulating interactivity: Click an incident to open drawer
+        document.querySelectorAll('.cursor-pointer').forEach(el => {
+            el.addEventListener('click', toggleDrawer);
+        });
+    </script>
+</body></html>

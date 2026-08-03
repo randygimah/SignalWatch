@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SignalWatch | Broadband Interference Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#f9f9ff",
+                    "inverse-on-surface": "#ecf1ff",
+                    "tertiary": "#b61722",
+                    "error": "#ba1a1a",
+                    "on-error-container": "#93000a",
+                    "surface-container": "#e7eeff",
+                    "primary-fixed": "#d8e2ff",
+                    "secondary-container": "#fea619",
+                    "on-primary-fixed-variant": "#004395",
+                    "surface-bright": "#f9f9ff",
+                    "on-tertiary-fixed-variant": "#930013",
+                    "primary-container": "#2170e4",
+                    "on-surface-variant": "#424754",
+                    "surface-container-high": "#dee8ff",
+                    "secondary": "#855300",
+                    "outline-variant": "#c2c6d6",
+                    "on-error": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#ffb95f",
+                    "on-tertiary-container": "#fffbff",
+                    "on-secondary-fixed": "#2a1700",
+                    "inverse-primary": "#adc6ff",
+                    "tertiary-fixed-dim": "#ffb3ad",
+                    "on-primary-fixed": "#001a42",
+                    "surface-container-highest": "#d8e3fb",
+                    "on-tertiary-fixed": "#410004",
+                    "inverse-surface": "#263143",
+                    "on-surface": "#111c2d",
+                    "on-primary-container": "#fefcff",
+                    "on-background": "#111c2d",
+                    "outline": "#727785",
+                    "surface-container-low": "#f0f3ff",
+                    "surface-dim": "#cfdaf2",
+                    "on-secondary": "#ffffff",
+                    "secondary-fixed": "#ffddb8",
+                    "primary": "#0058be",
+                    "tertiary-container": "#da3437",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed": "#ffdad7",
+                    "surface-tint": "#005ac2",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-tertiary": "#ffffff",
+                    "background": "#f9f9ff",
+                    "on-primary": "#ffffff",
+                    "on-secondary-container": "#684000",
+                    "surface-variant": "#d8e3fb",
+                    "on-secondary-fixed-variant": "#653e00"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "margin-desktop": "2.5rem",
+                    "gutter": "1.5rem",
+                    "md": "1rem",
+                    "lg": "1.5rem",
+                    "xl": "2rem",
+                    "2xl": "3rem",
+                    "base": "4px",
+                    "xs": "0.25rem",
+                    "margin-mobile": "1rem",
+                    "sm": "0.5rem"
+            },
+            "fontFamily": {
+                    "body-lg": ["Hanken Grotesk"],
+                    "headline-sm": ["Hanken Grotesk"],
+                    "label-caps": ["Hanken Grotesk"],
+                    "label-mono": ["JetBrains Mono"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "display-lg": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "label-mono": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Hanken Grotesk', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .scroll-hide::-webkit-scrollbar { display: none; }
+        .drawer-shadow { box-shadow: 0px 12px 32px rgba(30, 41, 59, 0.1); }
+    </style>
+</head>
+<body class="bg-surface text-on-surface overflow-hidden h-screen">
+<!-- Mock Background Dashboard to simulate the slide-out effect -->
+<div class="flex h-full blur-sm opacity-50 grayscale transition-all duration-700">
+<!-- Sidebar Rail (per JSON) -->
+<aside class="fixed left-0 top-0 h-full w-[72px] bg-surface-container-low border-r border-outline-variant flex flex-col py-md z-40">
+<div class="flex flex-col items-center gap-6">
+<span class="material-symbols-outlined text-primary text-headline-sm">radar</span>
+<span class="material-symbols-outlined text-on-surface-variant">analytics</span>
+<span class="material-symbols-outlined text-on-surface-variant">inventory_2</span>
+<span class="material-symbols-outlined text-on-surface-variant">map</span>
+<span class="material-symbols-outlined text-on-surface-variant">router</span>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-[72px] w-full p-margin-desktop space-y-lg">
+<div class="flex justify-between items-center h-16 px-margin-desktop mb-lg border-b border-outline-variant bg-surface-container-lowest">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">SignalWatch</h1>
+</div>
+<div class="grid grid-cols-12 gap-gutter">
+<div class="col-span-8 h-[400px] bg-white border border-outline-variant rounded-lg"></div>
+<div class="col-span-4 h-[400px] bg-white border border-outline-variant rounded-lg"></div>
+<div class="col-span-12 h-[200px] bg-white border border-outline-variant rounded-lg"></div>
+</div>
+</main>
+</div>
+<!-- Right Slide-out Drawer: Incident Detail -->
+<div class="fixed inset-0 z-50 pointer-events-none">
+<!-- Backdrop -->
+<div class="absolute inset-0 bg-on-surface/20 backdrop-blur-sm pointer-events-auto"></div>
+<!-- Drawer Container -->
+<div class="absolute right-0 top-0 h-full w-full max-w-[460px] bg-white drawer-shadow pointer-events-auto border-l border-outline-variant flex flex-col transform transition-transform duration-500 ease-out translate-x-0">
+<!-- Header -->
+<header class="flex items-center justify-between px-lg py-md border-b border-outline-variant shrink-0">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-tertiary">warning</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Incident Detail</h2>
+</div>
+<button class="p-xs hover:bg-surface-container rounded-full transition-colors" onclick="window.history.back()">
+<span class="material-symbols-outlined text-on-surface-variant">close</span>
+</button>
+</header>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto p-lg space-y-xl scroll-hide">
+<!-- Severity Section -->
+<section class="space-y-sm">
+<div class="flex justify-between items-end">
+<div class="space-y-xs">
+<span class="font-label-caps text-label-caps text-tertiary">CRITICAL ALERT</span>
+<h3 class="font-display-lg text-display-lg text-on-surface leading-tight">Broadband Interference</h3>
+</div>
+<div class="text-right">
+<span class="font-display-lg text-display-lg text-tertiary">96<span class="text-headline-sm">/100</span></span>
+<p class="font-label-caps text-label-caps text-on-surface-variant">SEVERITY INDEX</p>
+</div>
+</div>
+<div class="w-full h-1 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-tertiary w-[96%]"></div>
+</div>
+</section>
+<!-- Plain Language Summary -->
+<section class="bg-surface-container-low p-md rounded-xl border border-outline-variant/30">
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+                        Noise levels rose across <span class="font-bold text-on-surface">six adjacent channels</span> for <span class="font-bold text-on-surface">35 minutes</span>. Noise floor was <span class="text-tertiary font-bold">14.2 dB</span> above normal, SNR fell <span class="text-tertiary font-bold">61%</span>, and packet loss increased to <span class="text-tertiary font-bold">18%</span>.
+                    </p>
+</section>
+<!-- Metrics Grid -->
+<section class="space-y-md">
+<h4 class="font-label-caps text-label-caps text-on-surface-variant">CRITICAL METRIC COMPARISON</h4>
+<div class="grid grid-cols-1 gap-sm">
+<!-- Metric Row 1 -->
+<div class="flex justify-between items-center p-md bg-white border border-outline-variant rounded-lg">
+<div>
+<p class="font-label-mono text-label-mono text-on-surface-variant">Noise Floor</p>
+<p class="font-display-lg text-headline-md text-tertiary">14.2<span class="text-body-md ml-1">dB</span></p>
+</div>
+<div class="text-right">
+<p class="font-label-mono text-label-mono text-outline">Expected</p>
+<p class="font-headline-sm text-headline-sm text-on-surface-variant">2.1<span class="text-body-md ml-1">dB</span></p>
+</div>
+</div>
+<!-- Metric Row 2 -->
+<div class="flex justify-between items-center p-md bg-white border border-outline-variant rounded-lg">
+<div>
+<p class="font-label-mono text-label-mono text-on-surface-variant">SNR</p>
+<p class="font-display-lg text-headline-md text-tertiary">12<span class="text-body-md ml-1">dB</span></p>
+</div>
+<div class="text-right">
+<p class="font-label-mono text-label-mono text-outline">Expected</p>
+<p class="font-headline-sm text-headline-sm text-on-surface-variant">31<span class="text-body-md ml-1">dB</span></p>
+</div>
+</div>
+<!-- Metric Row 3 -->
+<div class="flex justify-between items-center p-md bg-white border border-outline-variant rounded-lg">
+<div>
+<p class="font-label-mono text-label-mono text-on-surface-variant">Packet Loss</p>
+<p class="font-display-lg text-headline-md text-tertiary">18<span class="text-body-md ml-1">%</span></p>
+</div>
+<div class="text-right">
+<p class="font-label-mono text-label-mono text-outline">Expected</p>
+<p class="font-headline-sm text-headline-sm text-on-surface-variant">0.5<span class="text-body-md ml-1">%</span></p>
+</div>
+</div>
+</div>
+</section>
+<!-- Comparison Chart Placeholder -->
+<section class="space-y-md">
+<div class="flex justify-between items-center">
+<h4 class="font-label-caps text-label-caps text-on-surface-variant">ACTUAL VS NORMAL (35 MINS)</h4>
+<div class="flex gap-md items-center">
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="text-[10px] font-label-mono">Actual</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-outline-variant"></span>
+<span class="text-[10px] font-label-mono">Normal</span>
+</div>
+</div>
+</div>
+<div class="h-48 w-full bg-surface-container-low rounded-lg relative overflow-hidden border border-outline-variant p-md">
+<!-- Synthetic Line Chart with SVG -->
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 400 150">
+<!-- Grid lines -->
+<line stroke="#E2E8F0" stroke-width="0.5" x1="0" x2="400" y1="30" y2="30"></line>
+<line stroke="#E2E8F0" stroke-width="0.5" x1="0" x2="400" y1="75" y2="75"></line>
+<line stroke="#E2E8F0" stroke-width="0.5" x1="0" x2="400" y1="120" y2="120"></line>
+<!-- Normal Baseline -->
+<path d="M0,130 Q100,125 200,128 T400,126" fill="none" stroke="#94A3B8" stroke-dasharray="4" stroke-width="1.5"></path>
+<!-- Actual Spike -->
+<path d="M0,130 L50,128 L100,40 L150,30 L200,60 L250,20 L300,45 L350,110 L400,126" fill="none" stroke="#B61722" stroke-width="2"></path>
+<!-- Area fill -->
+<path d="M0,130 L50,128 L100,40 L150,30 L200,60 L250,20 L300,45 L350,110 L400,126 L400,150 L0,150 Z" fill="#B61722" fill-opacity="0.05"></path>
+</svg>
+</div>
+</section>
+<!-- Contribution Bars -->
+<section class="space-y-md">
+<h4 class="font-label-caps text-label-caps text-on-surface-variant">FEATURE CONTRIBUTION</h4>
+<div class="space-y-sm">
+<!-- Noise Floor -->
+<div class="space-y-xs">
+<div class="flex justify-between font-label-mono text-label-mono">
+<span>Noise Floor</span>
+<span>45%</span>
+</div>
+<div class="h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[45%]"></div>
+</div>
+</div>
+<!-- Packet Loss -->
+<div class="space-y-xs">
+<div class="flex justify-between font-label-mono text-label-mono">
+<span>Packet Loss</span>
+<span>30%</span>
+</div>
+<div class="h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[30%]"></div>
+</div>
+</div>
+<!-- Frequency Spreading -->
+<div class="space-y-xs">
+<div class="flex justify-between font-label-mono text-label-mono">
+<span>Frequency Spreading</span>
+<span>25%</span>
+</div>
+<div class="h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[25%]"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Context & Analysis -->
+<section class="grid grid-cols-2 gap-md border-t border-outline-variant pt-lg">
+<div class="space-y-xs">
+<p class="font-label-caps text-label-caps text-on-surface-variant">FREQ RANGE</p>
+<p class="font-label-mono text-label-mono">2.41 - 2.44 GHz</p>
+</div>
+<div class="text-right space-y-xs">
+<p class="font-label-caps text-label-caps text-on-surface-variant">DURATION</p>
+<p class="font-label-mono text-label-mono">35:12 MINS</p>
+</div>
+</section>
+<!-- Pattern Analysis -->
+<section class="bg-surface-bright border border-outline p-md rounded-lg flex gap-md">
+<span class="material-symbols-outlined text-primary-container">history</span>
+<div class="space-y-xs">
+<h5 class="font-label-caps text-label-caps text-on-surface">PATTERN RECOGNITION</h5>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                            This incident is part of a recurring pattern observed daily between <span class="font-label-mono text-[13px] bg-surface-container px-1">14:00</span> and <span class="font-label-mono text-[13px] bg-surface-container px-1">15:00 UTC</span>.
+                        </p>
+</div>
+</section>
+<!-- Action CTA -->
+<div class="pt-lg pb-xl">
+<button class="w-full bg-primary text-on-primary font-headline-sm py-md rounded-xl hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-sm">
+<span>Deploy Shielding Protocol</span>
+<span class="material-symbols-outlined">bolt</span>
+</button>
+<p class="text-center font-label-caps text-[10px] text-outline-variant mt-sm">ACTION WILL BE LOGGED FOR AUDIT</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Micro-interaction Script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const drawer = document.querySelector('.drawer-shadow');
+            // Subtle entry animation
+            drawer.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                drawer.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+                drawer.style.transform = 'translateX(0)';
+            }, 100);
+        });
+    </script>
+</body></html>

@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+:root {
+  font-family: "Hanken Grotesk", Inter, system-ui, sans-serif;
+  color: #111c2d;
+  background: #f9f9ff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
