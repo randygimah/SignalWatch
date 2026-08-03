@@ -11,7 +11,7 @@ Development is split into five reviewable phases. Each phase ends with verificat
 | 1. Repository skeleton | Complete | Dockerized React and FastAPI foundation |
 | 2. Synthetic data and ML pipeline | Complete | Reproducible scored RF dataset and grouped incidents |
 | 3. Query API | Complete | Filtered, versioned analytics endpoints |
-| 4. Interactive dashboard | Planned | Analyst-facing exploration and explanation UI |
+| 4. Interactive dashboard | Complete | Analyst-facing exploration and explanation UI |
 | 5. Integration and demo hardening | Planned | Clean-start verification and demo documentation |
 
 The Stitch exports are visual inspiration, not a specification. SignalWatch will retain their typography, restrained palette, summary cards, chart-and-incident layout, heatmap, and explanation drawer. Decorative navigation, search, notifications, profiles, maps, unsupported pages, and placeholder visualizations remain out of scope.
@@ -204,9 +204,9 @@ GET /api/v1/heatmap
 
 ## Phase 4 — Interactive Dashboard
 
-**Status:** Planned.
+**Status:** Complete.
 
-### Required behaviour
+### Delivered behaviour
 
 - Build one responsive desktop dashboard backed entirely by the Phase 3 API.
 - Add global time, sensor, frequency, severity, and incident-type filters.
@@ -217,6 +217,7 @@ GET /api/v1/heatmap
 - Use shared selection state so chart markers, incident cards, and heatmap cells open the same drawer.
 - Show incident name, severity, explanation, actual-versus-expected metrics, comparison chart, top contribution bars, duration, affected frequencies, and pattern context in the drawer.
 - Include loading, empty, and request-error states for each data region.
+- Keep the timeline analytically coherent by using a labelled focus channel when global frequency is set to all channels.
 
 ### Visual direction
 
@@ -225,34 +226,36 @@ GET /api/v1/heatmap
 - Use restrained white cards, subtle borders, and generous whitespace.
 - Do not add the Stitch side rail, unsupported pages, search, profile, notifications, settings, map, archive, reports, or static placeholder charts.
 
-### Review gate
+### Acceptance evidence
 
-Report implemented interactions, frontend tests, and a rendered dashboard screenshot. Document deliberate differences from the Stitch references.
+- Summary cards, incidents, timeline, and heatmap load from live API responses.
+- Severity filtering updates all four regions consistently.
+- Ranked incidents open a populated detail drawer with comparisons and model drivers.
+- The signal chart presents its expected-normal range at the correct RF baseline and retains anomaly markers.
+- The heatmap exposes adjacent-channel patterns using severity colour.
+- Loading, empty, API-error, and drawer-error states are implemented.
+- Two frontend interaction/error tests and the production TypeScript build pass.
+- Local browser inspection reports no runtime console errors.
 
 ### Relevant files
 
-Current application files to extend:
-
 - [`frontend/src/App.tsx`](../frontend/src/App.tsx)
 - [`frontend/src/api.ts`](../frontend/src/api.ts)
+- [`frontend/src/types.ts`](../frontend/src/types.ts)
 - [`frontend/src/index.css`](../frontend/src/index.css)
 - [`frontend/src/main.tsx`](../frontend/src/main.tsx)
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx)
 - [`frontend/src/test/setup.ts`](../frontend/src/test/setup.ts)
+- [`frontend/src/components/FilterBar.tsx`](../frontend/src/components/FilterBar.tsx)
+- [`frontend/src/components/SummaryCards.tsx`](../frontend/src/components/SummaryCards.tsx)
+- [`frontend/src/components/SignalTimeline.tsx`](../frontend/src/components/SignalTimeline.tsx)
+- [`frontend/src/components/IncidentList.tsx`](../frontend/src/components/IncidentList.tsx)
+- [`frontend/src/components/AnomalyHeatmap.tsx`](../frontend/src/components/AnomalyHeatmap.tsx)
+- [`frontend/src/components/IncidentDrawer.tsx`](../frontend/src/components/IncidentDrawer.tsx)
 - [`frontend/package.json`](../frontend/package.json)
 - [`frontend/package-lock.json`](../frontend/package-lock.json)
 - [`frontend/vite.config.ts`](../frontend/vite.config.ts)
 - [`frontend/index.html`](../frontend/index.html)
-
-Planned dashboard modules:
-
-- `frontend/src/components/FilterBar.tsx`
-- `frontend/src/components/SummaryCards.tsx`
-- `frontend/src/components/SignalTimeline.tsx`
-- `frontend/src/components/IncidentList.tsx`
-- `frontend/src/components/AnomalyHeatmap.tsx`
-- `frontend/src/components/IncidentDrawer.tsx`
-- `frontend/src/types.ts`
 
 Design references:
 

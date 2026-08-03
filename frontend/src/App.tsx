@@ -1,60 +1,148 @@
 import { useQuery } from '@tanstack/react-query'
+import { useEffect, useMemo, useState } from 'react'
 
-import { getHealth } from './api'
+import { getAnomalies, getHeatmap, getIncident, getObservations, getOverview } from './api'
+import { AnomalyHeatmap } from './components/AnomalyHeatmap'
+import { FilterBar } from './components/FilterBar'
+import { IncidentDrawer } from './components/IncidentDrawer'
+import { IncidentList } from './components/IncidentList'
+import { SignalTimeline } from './components/SignalTimeline'
+import { SummaryCards } from './components/SummaryCards'
+import type { DashboardFilters } from './types'
 
-function StatusIndicator() {
-  const health = useQuery({
-    queryKey: ['health'],
-    queryFn: getHealth,
-    retry: 1,
-  })
+const initialFilters: DashboardFilters = {
+  from: '',
+  to: '',
+  sensorId: 'RX-NORTH',
+  frequencyMhz: null,
+  minSeverity: null,
+  incidentType: '',
+}
 
-  if (health.isPending) {
-    return <p className="font-mono text-sm text-slate-500">Connecting to analysis service…</p>
-  }
-
-  if (health.isError) {
-    return (
-      <p role="alert" className="font-mono text-sm text-red-700">
-        Analysis service unavailable
-      </p>
-    )
-  }
-
-  return (
-    <div className="flex items-center gap-2 font-mono text-sm text-slate-600">
-      <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" aria-hidden="true" />
-      Analysis service online · v{health.data.version}
-    </div>
-  )
+function errorMessage(error: unknown) {
+  return error instanceof Error ? error.message : 'The analysis service could not complete this request.'
 }
 
 export default function App() {
-  return (
-    <main className="min-h-screen bg-[#f9f9ff] px-6 py-12 text-[#111c2d] md:px-10">
-      <section className="mx-auto max-w-6xl">
-        <header className="mb-10 flex items-center justify-between border-b border-[#c2c6d6] pb-5">
-          <div>
-            <p className="mb-1 font-mono text-xs uppercase tracking-[0.16em] text-[#0058be]">
-              RF intelligence
-            </p>
-            <h1 className="m-0 text-3xl font-bold tracking-tight">SignalWatch</h1>
-          </div>
-          <StatusIndicator />
-        </header>
+  const [filters, setFilters] = useState(initialFilters)
+  const [metric, setMetric] = useState('noise_floor_dbm')
+  const [focusFrequency, setFocusFrequency] = useState(433.05)
+  const [selectedIncidentId, setSelectedIncidentId] = useState<string | null>(null)
 
-        <div className="rounded-lg border border-[#c2c6d6] bg-white p-8 shadow-[0_4px_12px_rgba(30,41,59,0.05)]">
-          <p className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
-            Foundation ready
-          </p>
-          <h2 className="mb-3 text-2xl font-semibold">RF anomaly dashboard</h2>
-          <p className="m-0 max-w-2xl leading-7 text-slate-600">
-            The application shell is connected. Synthetic observations, anomaly scoring, incident
-            explanations, and interactive analysis arrive in the next phases.
-          </p>
+  const timelineFilters = useMemo(
+    () => ({ ...filters, frequencyMhz: filters.frequencyMhz ?? focusFrequency }),
+    [filters, focusFrequency],
+  )
+
+  const overview = useQuery({ queryKey: ['overview', filters], queryFn: () => getOverview(filters) })
+  const observations = useQuery({
+    queryKey: ['observations', timelineFilters, metric],
+    queryFn: () => getObservations(timelineFilters, metric),
+  })
+  const anomalies = useQuery({ queryKey: ['anomalies', filters], queryFn: () => getAnomalies(filters) })
+  const heatmap = useQuery({ queryKey: ['heatmap', filters], queryFn: () => getHeatmap(filters) })
+  const incident = useQuery({
+    queryKey: ['incident', selectedIncidentId],
+    queryFn: () => getIncident(selectedIncidentId!),
+    enabled: selectedIncidentId !== null,
+  })
+
+  useEffect(() => {
+    if (filters.frequencyMhz !== null) setFocusFrequency(filters.frequencyMhz)
+  }, [filters.frequencyMhz])
+
+  useEffect(() => {
+    setSelectedIncidentId(null)
+  }, [filters])
+
+  const errors = [overview.error, observations.error, anomalies.error, heatmap.error].filter(Boolean)
+  const isRefreshing = overview.isFetching || observations.isFetching || anomalies.isFetching || heatmap.isFetching
+  const availableSensors = observations.data?.meta.available_sensors ?? ['RX-CENTRAL', 'RX-NORTH', 'RX-SOUTH']
+  const availableFrequencies = observations.data?.meta.available_frequencies_mhz ?? [433.05, 433.3, 433.55, 433.8, 434.05, 434.3, 434.55, 434.8]
+
+  return (
+    <div className="app-shell">
+      <header className="app-header">
+        <div className="brand-block">
+          <div className="brand-mark" aria-hidden="true"><span /><span /><span /></div>
+          <div>
+            <h1>SignalWatch</h1>
+            <p>RF anomaly intelligence</p>
+          </div>
         </div>
-      </section>
-    </main>
+        <div className={`service-status ${isRefreshing ? 'service-status--busy' : ''}`}>
+          <span aria-hidden="true" />
+          {isRefreshing ? 'Refreshing analysis' : 'Analysis ready'}
+        </div>
+      </header>
+
+      <main className="dashboard">
+        <div className="page-intro">
+          <div>
+            <span className="eyebrow">Spectrum operations</span>
+            <h2>RF anomaly overview</h2>
+            <p>See what changed, how severe it is, and which signal dimensions drove the alert.</p>
+          </div>
+          <div className="batch-stamp">
+            <span>Analysis window</span>
+            <strong>08–14 Jul 2026 · UTC</strong>
+          </div>
+        </div>
+
+        <FilterBar
+          filters={filters}
+          sensors={availableSensors}
+          frequencies={availableFrequencies}
+          onChange={setFilters}
+        />
+
+        {errors.length > 0 && (
+          <div className="error-banner" role="alert">
+            <strong>Some analysis could not be loaded.</strong>
+            <span>{errorMessage(errors[0])}</span>
+          </div>
+        )}
+
+        <SummaryCards overview={overview.data} loading={overview.isPending} />
+
+        <div className="analysis-grid">
+          <SignalTimeline
+            points={observations.data?.items ?? []}
+            loading={observations.isPending}
+            metric={metric}
+            focusFrequency={focusFrequency}
+            frequencies={availableFrequencies}
+            frequencyLocked={filters.frequencyMhz !== null}
+            downsampled={observations.data?.meta.downsampled ?? false}
+            onMetricChange={setMetric}
+            onFocusFrequencyChange={setFocusFrequency}
+            onSelectIncident={setSelectedIncidentId}
+          />
+          <IncidentList
+            incidents={anomalies.data?.items ?? []}
+            total={anomalies.data?.total ?? 0}
+            loading={anomalies.isPending}
+            selectedId={selectedIncidentId}
+            onSelect={setSelectedIncidentId}
+          />
+        </div>
+
+        <AnomalyHeatmap
+          cells={heatmap.data?.cells ?? []}
+          loading={heatmap.isPending}
+          onSelectIncident={setSelectedIncidentId}
+        />
+      </main>
+
+      {selectedIncidentId && (
+        <IncidentDrawer
+          incident={incident.data}
+          loading={incident.isPending}
+          error={incident.error ? errorMessage(incident.error) : null}
+          onClose={() => setSelectedIncidentId(null)}
+        />
+      )}
+    </div>
   )
 }
 

@@ -4,7 +4,7 @@ SignalWatch is a RF anomaly monitoring application. It will generate synthetic s
 
 ## Current milestone
 
-Phase 3 provides a deterministic synthetic RF dataset, batch anomaly pipeline, and versioned query API. The dashboard remains a connectivity shell until the visualization phase.
+Phase 4 provides a deterministic synthetic RF dataset, batch anomaly pipeline, versioned query API, and interactive analyst dashboard.
 
 ## Prerequisites
 
@@ -59,6 +59,18 @@ The API loads generated Parquet artifacts once at startup. Run `make generate` b
 | `GET /api/v1/heatmap` | Time-and-frequency severity cells |
 
 Applicable endpoints accept `from`, `to`, `sensor_id`, `frequency_mhz`, `min_severity`, and `incident_type`. The observation endpoint also accepts a metric and returns at most 1,000 points while preserving anomalous readings. Interactive OpenAPI documentation is available at <http://localhost:8000/docs>.
+
+## Dashboard
+
+The dashboard at <http://localhost:5173> provides:
+
+- Global UTC time, sensor, frequency, severity, and incident-type filters.
+- Summary cards for incidents, critical incidents, affected sensors, and anomaly rate.
+- A metric-selectable signal timeline with normal bounds, anomaly markers, and zoom controls.
+- A severity-ranked incident list and channel-by-time heatmap.
+- A shared incident drawer with plain-language explanation, actual-versus-normal comparisons, supporting evidence, feature contributions, and pattern context.
+
+When all frequencies are selected, the timeline uses a labelled focus channel so a single line always represents one coherent RF series; the heatmap continues to show all channels.
 
 ## Repository layout
 
