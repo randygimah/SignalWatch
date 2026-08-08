@@ -1,5 +1,6 @@
 services:
   pipeline:
+    profiles: ["pipeline"]
     build:
       context: ./backend
     command: ["uv", "run", "python", "-m", "app.pipeline"]
