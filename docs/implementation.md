@@ -12,7 +12,7 @@ Development is split into five reviewable phases. Each phase ends with verificat
 | 2. Synthetic data and ML pipeline | Complete | Reproducible scored RF dataset and grouped incidents |
 | 3. Query API | Complete | Filtered, versioned analytics endpoints |
 | 4. Interactive dashboard | Complete | Analyst-facing exploration and explanation UI |
-| 5. Integration and demo hardening | Planned | Clean-start verification and demo documentation |
+| 5. Integration and demo hardening | Complete | Recoverable startup, cross-view integration coverage, and demo documentation |
 
 The Stitch exports are visual inspiration, not a specification. SignalWatch will retain their typography, restrained palette, summary cards, chart-and-incident layout, heatmap, and explanation drawer. Decorative navigation, search, notifications, profiles, maps, unsupported pages, and placeholder visualizations remain out of scope.
 
@@ -271,20 +271,27 @@ Design references:
 
 ## Phase 5 — Integration and Demo Hardening
 
-**Status:** Planned.
+**Status:** Complete.
 
-### Required behaviour
+### Delivered behaviour
 
-- Verify that every filter updates summary cards, timeline, incidents, and heatmap consistently.
-- Verify that every selection path opens the correct incident and baseline comparison.
-- Add application-level loading, empty, API-error, and unavailable-artifact states.
-- Run backend, frontend, and Docker Compose smoke tests from a clean build.
-- Complete documentation for architecture, generation, model reasoning, severity calibration, explanations, startup, limitations, and the demo walkthrough.
-- Confirm `make demo` generates missing artifacts and starts the complete application.
+- Make global filters update overview, observations, incidents, and heatmap through one shared filter state.
+- Verify that incident rows, timeline markers, and heatmap cells resolve to the same incident-detail endpoint and explanation drawer.
+- Distinguish initial loading, filtered-empty results, partial failures, complete service failures, missing analytics artifacts, and drawer failures.
+- Provide retry controls and a specific `make generate` recovery path when artifacts are unavailable.
+- Make `make demo` check for all six required artifacts and generate the deterministic dataset only when any file is missing.
+- Allow pipeline artifacts to be generated into an isolated directory with `DATA_DIR=/absolute/path` for clean-start verification.
+- Add a running-stack smoke test for API health, a real filtered overview query, and the dashboard response.
+- Document architecture, synthetic data, model reasoning, baselines, severity calibration, counterfactual explanations, startup, commands, limitations, and a three-minute walkthrough.
 
-### Final review gate
+### Acceptance evidence
 
-Report all tests, model metrics, startup instructions, known limitations, and the recommended three-minute demonstration flow.
+- Four frontend tests cover live rendering, incident-row detail, unavailable-artifact recovery, consistent cross-endpoint filters, and timeline/heatmap selection paths.
+- The frontend production TypeScript build passes.
+- The complete backend suite passes and retains its API, pipeline-quality, reproducibility, schema, and error-path assertions.
+- Artifact generation is verified in an isolated empty directory and produces the same deterministic SHA-256 hashes.
+- Docker Compose clean-build and running-stack smoke checks pass for the pipeline, API, and web services.
+- `make demo` is the only command required to generate missing data and start the application.
 
 ### Relevant files
 
@@ -294,17 +301,26 @@ Report all tests, model metrics, startup instructions, known limitations, and th
 - [`compose.yaml`](../compose.yaml)
 - [`.env.example`](../.env.example)
 - [`.gitignore`](../.gitignore)
+- [`scripts/smoke-test.sh`](../scripts/smoke-test.sh)
 - [`backend/Dockerfile`](../backend/Dockerfile)
+- [`backend/app/main.py`](../backend/app/main.py)
+- [`backend/app/pipeline.py`](../backend/app/pipeline.py)
+- [`backend/app/api/dependencies.py`](../backend/app/api/dependencies.py)
+- [`backend/app/api/routes.py`](../backend/app/api/routes.py)
+- [`backend/app/repositories/artifacts.py`](../backend/app/repositories/artifacts.py)
+- [`backend/tests/test_api.py`](../backend/tests/test_api.py)
 - [`backend/tests/test_health.py`](../backend/tests/test_health.py)
 - [`backend/tests/test_pipeline.py`](../backend/tests/test_pipeline.py)
 - [`frontend/Dockerfile`](../frontend/Dockerfile)
+- [`frontend/src/App.tsx`](../frontend/src/App.tsx)
+- [`frontend/src/api.ts`](../frontend/src/api.ts)
+- [`frontend/src/index.css`](../frontend/src/index.css)
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx)
-
-Planned integration coverage:
-
-- `backend/tests/test_api.py`
-- `frontend/src/App.integration.test.tsx`
-- `scripts/smoke-test.sh`
+- [`frontend/src/components/FilterBar.tsx`](../frontend/src/components/FilterBar.tsx)
+- [`frontend/src/components/SignalTimeline.tsx`](../frontend/src/components/SignalTimeline.tsx)
+- [`frontend/src/components/IncidentList.tsx`](../frontend/src/components/IncidentList.tsx)
+- [`frontend/src/components/AnomalyHeatmap.tsx`](../frontend/src/components/AnomalyHeatmap.tsx)
+- [`frontend/src/components/IncidentDrawer.tsx`](../frontend/src/components/IncidentDrawer.tsx)
 
 ## Assumptions and Exclusions
 

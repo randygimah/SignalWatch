@@ -106,6 +106,18 @@ button { cursor: pointer; }
 .heatmap-chart { height: 330px !important; }
 .empty-state { color: #778093; font-size: 13px; text-align: center; }
 .error-banner, .error-state { padding: 12px 16px; margin-top: 14px; display: flex; gap: 10px; background: #fff1f1; border: 1px solid #efb9bc; border-radius: 6px; color: #8e1720; font-size: 13px; }
+.loading-strip { margin-top: 14px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; color: #35557f; background: #edf3ff; border: 1px solid #cbdcf4; border-radius: 6px; font-size: 12px; }
+.loading-strip > span { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); animation: pulse 1.2s infinite; }
+.status-panel { margin-top: 18px; padding: 24px; display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center; background: #fff8eb; border: 1px solid #ebc77f; border-radius: 8px; }
+.status-panel--artifact { background: #f4f7fd; border-color: #b7cae7; }
+.status-panel__icon { width: 42px; height: 42px; display: grid; place-items: center; color: white; background: var(--amber); border-radius: 50%; font: 700 20px/1 "JetBrains Mono", monospace; }
+.status-panel--artifact .status-panel__icon { background: var(--blue); }
+.status-panel h3 { margin: 4px 0 5px; font-size: 19px; }
+.status-panel p { margin: 0; color: var(--muted); font-size: 13px; }
+.status-panel code { display: inline-block; margin-top: 10px; padding: 5px 8px; color: #28466d; background: white; border: 1px solid #cad7e9; border-radius: 4px; font: 600 11px/1 "JetBrains Mono", monospace; }
+.status-panel button { padding: 9px 16px; color: white; background: var(--blue); border: 0; border-radius: 4px; font-size: 12px; font-weight: 700; }
+.empty-banner { margin-top: 14px; padding: 12px 16px; display: flex; gap: 8px; color: #566173; background: #f9fbff; border: 1px dashed #bfcce0; border-radius: 6px; font-size: 12px; }
+.empty-banner strong { color: var(--navy); }
 .skeleton { border-radius: 5px; background: linear-gradient(100deg,#edf0f6 20%,#f8f9fc 42%,#edf0f6 64%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
 .skeleton--value { width: 90px; height: 34px; margin-top: 16px; }
 .skeleton--chart { width: 100%; height: 100%; }

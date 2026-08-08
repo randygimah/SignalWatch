@@ -1,11 +1,26 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { vi } from 'vitest'
 
 import App from './App'
 
 vi.mock('echarts-for-react', () => ({
-  default: ({ className }: { className?: string }) => <div data-testid="echarts" className={className} />,
+  default: ({
+    className,
+    onEvents,
+  }: {
+    className?: string
+    onEvents?: { click?: (params: { data: { incidentId: string } }) => void }
+  }) => (
+    <div data-testid="echarts" className={className}>
+      {className === 'timeline-chart' && (
+        <button type="button" aria-label="Select timeline incident" onClick={() => onEvents?.click?.({ data: { incidentId: 'INC-0001' } })} />
+      )}
+      {className === 'heatmap-chart' && (
+        <button type="button" aria-label="Select heatmap incident" onClick={() => onEvents?.click?.({ data: { incidentId: 'INC-0001' } })} />
+      )}
+    </div>
+  ),
 }))
 
 const incident = {
@@ -74,7 +89,17 @@ function installSuccessfulApiMock() {
       }],
     })
     if (url.includes('/anomalies')) return ok({ items: [incident], total: 1, limit: 12, offset: 0 })
-    if (url.includes('/heatmap')) return ok({ cells: [], bucket_minutes: 60 })
+    if (url.includes('/heatmap')) return ok({
+      cells: [{
+        time_bucket: '2026-07-08T09:00:00Z',
+        frequency_mhz: 433.05,
+        severity_score: 96,
+        severity: 'critical',
+        sensor_id: 'RX-NORTH',
+        incident_id: 'INC-0001',
+      }],
+      bucket_minutes: 60,
+    })
     throw new Error(`Unexpected request: ${url}`)
   }))
 }
@@ -104,7 +129,7 @@ test('renders live summary data and opens an incident explanation', async () => 
   expect(await within(drawer).findByText('62%')).toBeInTheDocument()
 })
 
-test('surfaces API failures as an analyst-readable error', async () => {
+test('surfaces missing artifacts with a recovery command', async () => {
   vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
     ok: false,
     status: 503,
@@ -113,6 +138,45 @@ test('surfaces API failures as an analyst-readable error', async () => {
   renderApp()
 
   const alert = await screen.findByRole('alert')
-  expect(alert).toHaveTextContent('Some analysis could not be loaded')
+  expect(alert).toHaveTextContent('Analysis artifacts are unavailable')
   expect(alert).toHaveTextContent('make generate')
+  expect(within(alert).getByRole('button', { name: 'Try again' })).toBeInTheDocument()
+})
+
+test('applies global sensor and severity filters to every dashboard query', async () => {
+  installSuccessfulApiMock()
+  renderApp()
+
+  await screen.findByText('Broadband interference')
+  const fetchMock = vi.mocked(fetch)
+  fetchMock.mockClear()
+
+  fireEvent.change(screen.getByRole('combobox', { name: 'Sensor' }), { target: { value: 'RX-SOUTH' } })
+  fireEvent.change(screen.getByRole('combobox', { name: 'Minimum severity' }), { target: { value: '90' } })
+
+  await waitFor(() => {
+    const requested = fetchMock.mock.calls.map(([input]) => new URL(String(input)))
+    for (const path of ['/api/v1/overview', '/api/v1/observations', '/api/v1/anomalies', '/api/v1/heatmap']) {
+      expect(requested.some((url) => (
+        url.pathname === path
+        && url.searchParams.get('sensor_id') === 'RX-SOUTH'
+        && url.searchParams.get('min_severity') === '90'
+      ))).toBe(true)
+    }
+  })
+})
+
+test('opens the same explained incident from timeline and heatmap selections', async () => {
+  installSuccessfulApiMock()
+  renderApp()
+
+  fireEvent.click(await screen.findByRole('button', { name: 'Select timeline incident' }))
+  let drawer = await screen.findByRole('dialog')
+  expect(await within(drawer).findByRole('heading', { name: 'Broadband interference' })).toBeInTheDocument()
+  fireEvent.click(within(drawer).getByRole('button', { name: 'Close incident detail' }))
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+
+  fireEvent.click(screen.getByRole('button', { name: 'Select heatmap incident' }))
+  drawer = await screen.findByRole('dialog')
+  expect(within(drawer).getByText('Noise rose across two adjacent channels.')).toBeInTheDocument()
 })

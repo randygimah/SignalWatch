@@ -9,6 +9,16 @@ import type {
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000'
 
+export class ApiError extends Error {
+  status: number
+
+  constructor(message: string, status: number) {
+    super(message)
+    this.name = 'ApiError'
+    this.status = status
+  }
+}
+
 function filterParams(filters: DashboardFilters): URLSearchParams {
   const params = new URLSearchParams()
   if (filters.from) params.set('from', filters.from)
@@ -25,7 +35,7 @@ async function request<T>(path: string, params?: URLSearchParams): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}${query ? `?${query}` : ''}`)
   if (!response.ok) {
     const body = (await response.json().catch(() => null)) as { detail?: string } | null
-    throw new Error(body?.detail ?? `Request failed with status ${response.status}`)
+    throw new ApiError(body?.detail ?? `Request failed with status ${response.status}`, response.status)
   }
   return response.json() as Promise<T>
 }
@@ -59,4 +69,3 @@ export function getHeatmap(filters: DashboardFilters): Promise<HeatmapResponse> 
   params.set('bucket_minutes', '60')
   return request('/api/v1/heatmap', params)
 }
-
