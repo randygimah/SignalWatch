@@ -1,4 +1,4 @@
-.PHONY: generate ensure-artifacts demo test build smoke down
+.PHONY: generate ensure-artifacts demo test build smoke figures down
 
 DATA_DIR ?= data
 ARTIFACTS := \
@@ -33,6 +33,9 @@ build:
 
 smoke:
 	./scripts/smoke-test.sh
+
+figures:
+	cd backend && MPLBACKEND=Agg uv run --with matplotlib python ../scripts/make_figures.py "$(abspath $(DATA_DIR))"
 
 down:
 	docker compose down --remove-orphans

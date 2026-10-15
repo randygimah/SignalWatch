@@ -1,8 +1,59 @@
-# SignalWatch
+<p align="center">
+  <img src="docs/images/logo.svg" alt="SignalWatch" width="360">
+</p>
+
+<p align="center">
+  <strong>Explainable RF anomaly detection, from raw radio telemetry to analyst-ready incidents.</strong><br>
+  Isolation Forest · counterfactual explanations · FastAPI · React + ECharts · one-command Docker demo
+</p>
+
+<p align="center">
+  <img src="docs/images/dashboard.png" alt="SignalWatch dashboard showing summary cards, a signal timeline, ranked incidents and a channel anomaly heatmap" width="900">
+</p>
 
 SignalWatch is a Dockerized RF anomaly-monitoring demo. It generates deterministic radio-frequency sensor observations, detects unusual behaviour with Isolation Forest, groups related detections into incidents, and explains each incident through an interactive analyst dashboard.
 
 The MVP is intentionally a modular monolith: one batch pipeline, one read-only FastAPI service, one React dashboard, and Parquet artifacts instead of an operational database.
+
+## What SignalWatch answers
+
+A spectrum analyst watching many sensors and channels needs more than an "anomaly" flag. SignalWatch is built around four questions:
+
+1. **Did something unusual happen?** An unsupervised model trained only on normal behaviour flags readings that do not fit, with no labelled attacks or faults required.
+2. **How bad is it?** Every incident gets a 0–100 severity score and a low/medium/high/critical band, so the worst problems come first.
+3. **What kind of problem is it?** Related detections are grouped into one incident and typed as broadband interference, narrowband interference, signal dropout, sensor malfunction, or an unusual RF pattern.
+4. **Why did the model flag it?** Counterfactual rescoring shows which signal dimensions drove the alert, alongside actual-versus-expected values.
+
+## Results at a glance
+
+On the deterministic seed-42 dataset (two weeks, 96,768 observations, twelve hidden injected events):
+
+| | |
+| --- | ---: |
+| Injected events detected | **12 / 12 (100%)** |
+| Root cause typed correctly | **12 / 12 (100%)** |
+| Clean-observation false-positive rate | **0.77%** |
+| Flagged observations → grouped incidents | 742 → 51 |
+
+<p align="center">
+  <img src="docs/images/severity-by-type.png" alt="Severity score of every incident by type. All 12 injected events are critical, high or medium; the 39 unlabelled unusual-RF-pattern detections are low or medium." width="820">
+</p>
+
+Interference and sensor-malfunction events score in the critical band, apart from one narrowband event scored high. Signal dropouts are subtler and land in medium. The 39 detections that match no injected event are all labelled *unusual RF pattern* and stay low or medium, so they sit below the real problems in the ranked list.
+
+<p align="center">
+  <img src="docs/images/feature-contributions.png" alt="Heatmap of mean counterfactual contribution by incident type and signal dimension" width="820">
+</p>
+
+The explanations separate root causes in physically sensible ways. Interference and malfunctions are driven by cross-channel noise and noise floor. Dropouts are driven by SNR and packet loss, and cross-channel noise never appears among their top three dimensions.
+
+<p align="center">
+  <img src="docs/images/incident-drawer.png" alt="Incident drawer explaining a broadband interference event: plain-language summary, actual versus expected metrics, noise floor during the incident and feature contributions" width="820">
+</p>
+
+Selecting any incident opens a plain-language explanation with actual-versus-expected metrics, the signal during the incident, and the dimensions that drove the alert.
+
+Regenerate these figures from the current artifacts with `make figures`.
 
 ## Quick start
 
@@ -24,8 +75,16 @@ Stop the application with `make down`.
 
 ```mermaid
 flowchart LR
-    P["Batch pipeline<br/>synthetic data + Isolation Forest"] --> A["Parquet and model artifacts<br/>mounted data directory"]
-    A --> API["FastAPI query API<br/>filtering + explanations"]
+    subgraph pipeline["Batch pipeline · make generate"]
+        direction TB
+        G["Synthetic RF generator<br/>3 sensors × 8 channels × 14 days"] --> F["Feature engineering<br/>hourly baselines · 13 features"]
+        F --> M["Isolation Forest<br/>fit on clean week 1 only"]
+        M --> S["Scoring + severity<br/>99.5th-percentile threshold"]
+        S --> I["Incident grouping<br/>RF rule typing + explanations"]
+        I --> E["Evaluation<br/>vs. hidden injected labels"]
+    end
+    pipeline --> D[("data/<br/>Parquet · joblib · JSON")]
+    D --> API["FastAPI query API<br/>/api/v1 · filtering + explanations"]
     API --> UI["React dashboard<br/>ECharts + TanStack Query"]
 ```
 
@@ -129,6 +188,7 @@ make ensure-artifacts  # generate only when an artifact is missing
 make build             # build all container images
 make test              # run backend and frontend tests in containers
 make smoke             # verify a running API, overview query, and dashboard
+make figures           # re-render README charts from data/ artifacts
 make demo              # ensure artifacts, build, and start the stack
 make down              # stop containers and remove orphans
 ```
@@ -149,7 +209,7 @@ Local frontend checks can also be run from `frontend/` with `npm run test:run` a
 
 - `backend/`: FastAPI application, analytics pipeline, and Python tests.
 - `frontend/`: React, TypeScript, ECharts, TanStack Query, and frontend tests.
-- `scripts/`: running-stack smoke checks.
+- `scripts/`: running-stack smoke checks and README figure rendering.
 - `data/`: generated Parquet, model, evaluation, and metadata artifacts.
-- `docs/`: phase-by-phase implementation record.
+- `docs/`: phase-by-phase implementation record and README images.
 - `assets/`: Stitch exports and visual inspiration, not application source code.
